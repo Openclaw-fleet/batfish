@@ -1,0 +1,4 @@
+# Declared intent of PR #4184 (cicd: G3 fabric containment for approved lab runner slots)
+intent: "Containment only: reachability may only be REMOVED, and only for flows sourced from the CI runner pool (CI_POOL_CICD 10.10.220.64/27)."
+changes_only_for_sources: ["10.10.220.64/27"]
+direction: "permit->deny"

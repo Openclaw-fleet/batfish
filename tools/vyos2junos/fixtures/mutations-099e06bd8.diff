@@ -1,0 +1,39 @@
+diff -ru render/node02-pve-node-02/vyos-commands.sh render-mut/node02-pve-node-02/vyos-commands.sh
+--- render/node02-pve-node-02/vyos-commands.sh	2026-11-06 03:45:38.661129830 +0000
++++ render-mut/node02-pve-node-02/vyos-commands.sh	2026-11-06 07:12:35.914567844 +0000
+@@ -15581,3 +15581,6 @@
+ set firewall ipv4 name zone-to-local rule 27 protocol udp
+ set firewall ipv4 name zone-to-local rule 27 destination port 123
+ set firewall ipv4 name zone-to-local rule 27 description "Allow NTP to VyOS"
++set firewall ipv4 name wan-to-mgmt rule 7 action accept
++set firewall ipv4 name wan-to-mgmt rule 7 protocol tcp
++set firewall ipv4 name wan-to-mgmt rule 7 destination port 8080
+diff -ru render/node05-pve-node-05/vyos-commands.sh render-mut/node05-pve-node-05/vyos-commands.sh
+--- render/node05-pve-node-05/vyos-commands.sh	2026-11-06 03:45:41.345174924 +0000
++++ render-mut/node05-pve-node-05/vyos-commands.sh	2026-11-06 07:12:35.918567912 +0000
+@@ -15581,3 +15581,7 @@
+ set firewall ipv4 name zone-to-local rule 27 protocol udp
+ set firewall ipv4 name zone-to-local rule 27 destination port 123
+ set firewall ipv4 name zone-to-local rule 27 description "Allow NTP to VyOS"
++set firewall ipv4 name dev-to-mgmt rule 8 action accept
++set firewall ipv4 name dev-to-mgmt rule 8 protocol tcp
++set firewall ipv4 name dev-to-mgmt rule 8 tcp flags ack
++set firewall ipv4 name dev-to-mgmt rule 8 tcp flags not syn
+diff -ru render/node11-prox/vyos-commands.sh render-mut/node11-prox/vyos-commands.sh
+--- render/node11-prox/vyos-commands.sh	2026-11-06 03:45:49.677314910 +0000
++++ render-mut/node11-prox/vyos-commands.sh	2026-11-06 06:49:04.002738759 +0000
+@@ -11187,3 +11187,4 @@
+ set firewall ipv4 name zone-to-local rule 27 protocol udp
+ set firewall ipv4 name zone-to-local rule 27 destination port 123
+ set firewall ipv4 name zone-to-local rule 27 description "Allow NTP to VyOS"
++delete firewall ipv4 name mgmt-to-pkicore rule 500
+diff -ru render/node13-pve-node-13/vyos-commands.sh render-mut/node13-pve-node-13/vyos-commands.sh
+--- render/node13-pve-node-13/vyos-commands.sh	2026-11-06 03:45:52.425361079 +0000
++++ render-mut/node13-pve-node-13/vyos-commands.sh	2026-11-06 06:49:04.002738759 +0000
+@@ -8525,3 +8525,6 @@
+ set firewall ipv4 name zone-to-local rule 27 protocol udp
+ set firewall ipv4 name zone-to-local rule 27 destination port 123
+ set firewall ipv4 name zone-to-local rule 27 description "Allow NTP to VyOS"
++set firewall ipv4 name botlab-to-pkicore rule 5 action accept
++set firewall ipv4 name botlab-to-pkicore rule 5 protocol tcp
++set firewall ipv4 name botlab-to-pkicore rule 5 destination port 8443
