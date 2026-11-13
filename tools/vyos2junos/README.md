@@ -19,7 +19,7 @@ Design, assumptions (K1–K4), coverage, validation evidence and results are in 
 - [hset.py](hset.py) is exact interval algebra over src/dst/proto/ports/TCP flags.
 - [vyos2junos.py](vyos2junos.py) is the translator. It emits one Junos config per gateway and per traffic class (`new`, `est`, `nat`), plus a sidecar JSON with each term's VyOS origin and the UNSUPPORTED regions. Semantics follow vyos-1x `dbde15e2` nftables templates.
 - [vyos_ref2.py](vyos_ref2.py) is an independent per-packet reference evaluator that shares only the parser. `tcp_loose` is an explicit input: `0`, `1`, `both` or `config`.
-- [gen_expectations.py](gen_expectations.py) and [check_expectations.py](check_expectations.py) derive assertions from `policies.yml`/`zones.yml`/`production.yml` and decide them with `filterLineReachability`. `searchFilters` supplies a witness flow for each failure.
+- The policy expectations (`gen_expectations.py`, `check_expectations.py`) live in Openclaw-fleet/Openclaw-fleet-proxmoxsdn-ci `pipeline/`, which imports this directory's helpers from `$BATFISH_TOOLS`.
 - [pr_diff.py](pr_diff.py) is PR mode: offline render of base and head, translate, `compareFilters` + `differentialReachability`, then an intent check.
 - [validate2.py](validate2.py) + [corpus.py](corpus.py) are the differential validation against the reference evaluator. [run_corpus.py](run_corpus.py) diffs a kernel/VyOS ground-truth JSONL corpus against both.
 - [build_snaps.sh](build_snaps.sh), [load2.py](load2.py) and [bfmeasure.py](bfmeasure.py) are snapshot build/load helpers with wall-time and Java RSS measurement. [run-batfish.example.sh](run-batfish.example.sh) shows how the spike ran the server.
@@ -42,7 +42,7 @@ Design, assumptions (K1–K4), coverage, validation evidence and results are in 
 - Junos `tcp-initial` is modelled by Batfish as SYN regardless of ACK, so SYN-only is emitted as `tcp-flags "(syn & !ack)"`.
 - Batfish keeps only the last `match source-address` of a NAT rule, so NAT matches use one address-set per side.
 - `then source-nat off` is correct for VyOS `exclude`. Batfish treats a matched `source-nat off` as a no-op that ends source-NAT rule evaluation, which is exclude semantics. Do not remove it.
-- `filterLineReachability` groups identical filters on a node into one `Sources` entry, `"node: A, B"`. [check_expectations.py](check_expectations.py) splits it.
+- `filterLineReachability` groups identical filters on a node into one `Sources` entry, `"node: A, B"`. The CI repo's `check_expectations.py` splits it.
 - Each gateway is analysed in isolation, using a dummy Layer-1 edge, so Batfish does not merge the identical `10.10.x.1` subnets across gateways.
 - The heaviest step, the full assertion check, peaked at 13.3 GB Java RSS with `-Xmx12g`. Run one Batfish session at a time on a 16 GB host.
 - Not yet validated against booted VyOS. The reference evaluator and the translator share one reading of vyos-1x.
@@ -55,8 +55,6 @@ Design, assumptions (K1–K4), coverage, validation evidence and results are in 
 render-vyos-node-artifacts.py --output-dir "$R" --nodes all --clean
 tools/batfish/build_snaps.sh "$R" cur
 python3 -I tools/batfish/load2.py v2 cur-new cur-est cur-nat
-python3 -I tools/batfish/gen_expectations.py . "$BATFISH_WORKDIR/expectations.yml"
-python3 -I tools/batfish/check_expectations.py "$R" "$BATFISH_WORKDIR/expectations.yml" cur
 python3 -I tools/batfish/pr_diff.py . <base> <head> --expect tools/batfish/fixtures/pr-4184-intent.yml
 python3 -I tools/batfish/run_corpus.py corpus.jsonl "$R" cur --tcp-loose both
 ```
