@@ -126,9 +126,10 @@ def bf_headers(f):
     else:
         h.update(icmpTypes=[int(f.get("icmp_type", 8))], icmpCodes=[int(f.get("icmp_code", 0))])
     if f["proto"] == "tcp":
-        h["tcpFlags"] = [{"tcpFlags": {"syn": bool(f["syn"]), "ack": bool(f["ack"]), "rst": False, "fin": False,
-                                       "urg": False, "psh": False, "ece": False, "cwr": False},
-                          "useSyn": True, "useAck": True, "useRst": True, "useFin": True}]
+        h["tcpFlags"] = [{"tcpFlags": {"syn": bool(f["syn"]), "ack": bool(f["ack"]), "rst": bool(f.get("rst")),
+                                       "fin": bool(f.get("fin")), "urg": False, "psh": bool(f.get("psh")),
+                                       "ece": False, "cwr": False},
+                          "useSyn": True, "useAck": True, "useRst": True, "useFin": True, "usePsh": True}]
     return HeaderConstraints(**h)
 
 
